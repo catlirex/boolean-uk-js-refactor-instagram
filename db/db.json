@@ -87,6 +87,24 @@
       "content": "How did you capture that... perfect timing!",
       "userId": 3,
       "postId": 3
+    },
+    {
+      "content": "hihi",
+      "postId": 3,
+      "userId": 1,
+      "id": 7
+    },
+    {
+      "content": "hi",
+      "postId": 3,
+      "userId": 3,
+      "id": 8
+    },
+    {
+      "content": "yo~",
+      "postId": 3,
+      "userId": 2,
+      "id": 9
     }
   ]
 }

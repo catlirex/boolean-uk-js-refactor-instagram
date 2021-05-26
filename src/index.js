@@ -186,7 +186,7 @@ function renderFeed(post){
         postCommentsDiv.append(renderCommentDiv(comment))
     }
 
-    commentForm = renderCommentForm()
+    commentForm = renderCommentForm(post)
 
     let postLi = document.createElement("li")
     postLi.className = "post"
@@ -195,7 +195,7 @@ function renderFeed(post){
     return postLi
 }
 
-function renderCommentForm(){
+function renderCommentForm(post){
     let commentLabel = document.createElement("label")
     commentLabel.setAttribute("for", "comment")
     commentLabel.innerText = "Add Comment"
@@ -213,7 +213,43 @@ function renderCommentForm(){
     commentForm.setAttribute("id", "create-comment-form")
     commentForm.setAttribute("autocomplete", "off")
     commentForm.append(commentLabel, commentInput, commentSubmit)
+
+    commentForm.addEventListener("submit", function(event){
+        event.preventDefault()
+        
+        if(state.activeId === null){
+            alert("Please select User")
+        } 
+        else{
+            newComment = {
+                content: commentInput.value,
+                postId: post.id,
+                userId: state.activeId
+            }
+            postComment(newComment)
+            .then(function(newCommentFromServer){
+                let postIndex = state.posts.findIndex(function(post){
+                    return post.id === newCommentFromServer.postId
+                })
+                state.posts[postIndex].comments = [...state.posts[postIndex].comments, newCommentFromServer]
+                let feedSection = document.querySelector(".feed")
+                feedSection.remove()
+                renderFeeds()
+            })
+        }
+    })
+
     return commentForm
+}
+
+function postComment(newComment){
+    return fetch("http://localhost:3000/comments", {
+        method: 'POST',
+        headers:{
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(newComment)
+      }).then(response => response.json())
 }
 
 function renderCommentDiv(comment){
