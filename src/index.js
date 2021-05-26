@@ -34,7 +34,8 @@ function renderHeaderSection(){
     header.append(headerWrapper)
 
     for(user of state.users) {
-        headerWrapper.append(createUserChip(user)) 
+        userChip = createUserChip(user)
+        headerWrapper.append(userChip) 
     }
 }
 
@@ -52,7 +53,23 @@ function createUserChip(user){
     userName.innerText = user.username
     chipDiv.append(avatarDiv, userName)
 
+    chipDiv.addEventListener("click",function(){
+        state.activeId = user.id
+        updateActiveChip()
+      })
     return chipDiv
+}
+
+function updateActiveChip(){
+    let allUsersChip = document.querySelectorAll(".chip")
+    allUsersChip.forEach(function(chip){
+        if (chip.id === state.activeId.toString()){
+            chip.setAttribute("class", "active chip")
+        }
+        else{
+            chip.setAttribute("class", "chip")
+        }
+    })
 }
 
 function renderMain(){
