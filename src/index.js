@@ -127,6 +127,33 @@ function renderCreatePostSection(){
     createPostForm.setAttribute("id", "create-post-form")
     createPostForm.setAttribute("autocomplete", "off")
     createPostForm.append(formH2, imageLabel, imageInput, titleLabel, titleInput, contentLabel, contentInput, btnDiv)
+    createPostForm.addEventListener("submit", function(event){
+        event.preventDefault()
+        if(state.activeId === null){
+            alert("Please select User")
+        } 
+        else{
+            newPost = {
+                title: titleInput.value,
+                content: contentInput.value,
+                image :{
+                    src: imageInput.value,
+                    alt: titleInput.value
+                },
+                likes:0,
+                userId: state.activeId
+            }
+
+            postNewPost(newPost)
+            .then(function(newPostFromServer){
+                let newPostToRender = newPostFromServer
+                newPostToRender.comments = "null"
+                let ulEl = document.querySelector(".stack")
+                ulEl.prepend(renderFeed(newPostToRender))
+                createPostForm.reset()
+            })
+        }
+    })
 
     let createPostSection = document.createElement("section")
     createPostSection.className = "create-post-section"
@@ -134,6 +161,16 @@ function renderCreatePostSection(){
 
     let mainWrapper = document.querySelector("main")
     mainWrapper.append(createPostSection)
+}
+
+function postNewPost(newPost){
+    return fetch("http://localhost:3000/posts", {
+        method: 'POST',
+        headers:{
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(newPost)
+      }).then(response => response.json())
 }
 
 function renderFeeds(){
@@ -182,8 +219,10 @@ function renderFeed(post){
     postCommentH3.innerText = "Comments"
     postCommentsDiv.prepend(postCommentH3)
 
-    for (comment of post.comments){
-        postCommentsDiv.append(renderCommentDiv(comment))
+    if (post.comments !== "null"){
+        for (comment of post.comments){
+            postCommentsDiv.append(renderCommentDiv(comment))
+        }
     }
 
     commentForm = renderCommentForm(post)
@@ -277,13 +316,14 @@ function renderCommentDiv(comment){
 function render(){
     getUsers()
         .then(function(){
-        renderHeaderSection()
-        renderMain()
+            getPosts() 
+                .then(function(){
+                    renderHeaderSection()
+                    renderMain()
+                    renderFeeds()
+                })
         })
-    getPosts()  
-        .then(function(){
-            renderFeeds()
-        })
+     
 }
 
 render()
