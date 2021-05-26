@@ -56,8 +56,21 @@ function createUserChip(user){
     chipDiv.addEventListener("click",function(){
         state.activeId = user.id
         updateActiveChip()
+        updatePreviewChip()
       })
     return chipDiv
+}
+
+function updatePreviewChip(){
+    let previewDiv = document.querySelector(".post")
+    previewChip = previewDiv.querySelector(".chip")
+    previewChip.remove()
+
+    activeUser = state.users.find(function(user){
+        return user.id === state.activeId
+    })
+    newChip = createUserChip(activeUser)
+    previewDiv.prepend(newChip)
 }
 
 function updateActiveChip(){
@@ -114,6 +127,14 @@ function renderCreatePostSection(){
     previewBtn.setAttribute("id", "preview-btn")
     previewBtn.setAttribute("type", "button")
     previewBtn.innerText = "Preview"
+    previewBtn.addEventListener("click", function(){
+       previewPost={
+           title: titleInput.value,
+           content: contentInput.value,
+           image: imageInput.value
+       }
+       renderPostPreview(previewPost)
+    })
 
     let submitBtn = document.createElement("button")
     submitBtn.setAttribute("type", "submit")
@@ -155,12 +176,65 @@ function renderCreatePostSection(){
         }
     })
 
+    
+
     let createPostSection = document.createElement("section")
     createPostSection.className = "create-post-section"
-    createPostSection.append(createPostForm)
+    createPostSection.append(createPostForm, renderPostPreviewDummy())
 
     let mainWrapper = document.querySelector("main")
     mainWrapper.append(createPostSection)
+}
+
+function renderPostPreview(previewPost){
+    let previewDiv = document.querySelector(".post")
+    let previewImgDiv = previewDiv.querySelector(".post--image")
+    previewImgDiv.classList.remove("loading-state")
+    previewImgDiv.innerHTML = ""
+    let previewImg = document.createElement("img")
+    previewImg.setAttribute("src", previewPost.image)
+    previewImgDiv.append(previewImg)
+
+    let previewTitle = previewDiv.querySelector("h2")
+    previewTitle.classList.remove("loading-state")
+    previewTitle.innerText = previewPost.title
+
+    let previewPara = previewDiv.querySelector("p")
+    previewPara.classList.remove("loading-state")
+    previewPara.innerText = previewPost.content
+
+}
+
+function renderPostPreviewDummy(){
+    let previewDiv = document.createElement("div")
+    previewDiv.className = "post"
+
+    if(state.activeId !== null){
+        activeUser = state.users.find(function(user){
+            return user.id === state.activeId
+        })
+       userChip = createUserChip(activeUser)
+    }
+    else{
+        let dummyUser ={
+            username: "Please Select User",
+            avatar: "https://cdn2.vectorstock.com/i/1000x1000/23/81/default-avatar-profile-icon-vector-18942381.jpg"
+        }
+        userChip = createUserChip(dummyUser)
+    }
+    let previewImgDiv = document.createElement("div")
+    previewImgDiv.className = "post--image loading-state"
+    let previewContent = document.createElement("div")
+    previewContent.className = "post--content"
+    let previewH2 = document.createElement("h2")
+    previewH2.className = "loading-state"
+    let previewPara = document.createElement("p")
+    previewPara.className = "loading-state"
+
+    previewContent.append(previewH2, previewPara)
+    previewDiv.append(userChip, previewImgDiv, previewContent)
+
+    return previewDiv
 }
 
 function postNewPost(newPost){

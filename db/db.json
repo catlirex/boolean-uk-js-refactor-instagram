@@ -71,6 +71,17 @@
       "likes": 0,
       "userId": 1,
       "id": 5
+    },
+    {
+      "title": "hello",
+      "content": "testing",
+      "image": {
+        "src": "https://images.pexels.com/photos/1595483/pexels-photo-1595483.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
+        "alt": "hello"
+      },
+      "likes": 0,
+      "userId": 1,
+      "id": 6
     }
   ],
   "comments": [
